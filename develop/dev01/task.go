@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/beevik/ntp"
 	"os"
+
+	"github.com/beevik/ntp"
 )
 
 func main() {

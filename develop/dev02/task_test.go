@@ -6,38 +6,36 @@ import (
 
 func TestUnpack(t *testing.T) {
 	tests := []struct {
-		input    string
-		expected string
-		hasError bool
+		input       string
+		expected    string
+		expectError bool
 	}{
-		// Тесты на корректные строки
-		{"a2bcd3", "aabcccd", false},   // Несколько символов с цифрами
-		{"abcd", "abcd", false},        // Строка без цифр
-		{"a3b2", "aaabb", false},       // Одинаковые символы
-		{"a4b3c2", "aaaabbbcc", false}, // Длинные последовательности
+		// Корректные строки
+		{`a4bc2d5e`, `aaaabccddddde`, false},
+		{`a4b12`, `aaaabbbbbbbbbbbb`, false},
+		{`abcd`, `abcd`, false},
+		{`a4\3b2`, `aaaa3bb`, false},
+		{`a4\\2b`, `aaaa\\b`, false},
+		{`qwe\4\5`, `qwe45`, false},
+		{`qwe\45`, `qwe44444`, false},
+		{`qwe\\5`, `qwe\\\\\`, false},
+		{`a4\b20`, `aaaabbbbbbbbbbbbbbbbbbbb`, false},
+		{`a1b2c3`, `abbccc`, false},
+		{``, ``, false},
 
-		// Тесты на граничные случаи
-		{"", "", false},   // Пустая строка
-		{"a", "a", false}, // Одна буква без цифры
-
-		// Ошибочные случаи
-		{"3abc", "", true},             // Строка начинается с цифры
-		{"a3b2c1d0", "aaabbcd", false}, // Ноль повторений, не добавляем символ
-		{"a10b", "aaaaaaaaaab", false}, // Большое число повторений
+		// Некорректные строки
+		{`45`, ``, true},     // Начало строки с цифры
+		{`a4c5e\`, ``, true}, // Строка заканчивается \
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.input, func(t *testing.T) {
-			result, err := Unpack(tt.input)
-
-			// Проверяем наличие ошибки, если она ожидается
-			if (err != nil) != tt.hasError {
-				t.Errorf("Unpack(%q) error = %v, expected error = %v", tt.input, err, tt.hasError)
+	for _, test := range tests {
+		t.Run(test.input, func(t *testing.T) {
+			result, err := Unpack(test.input)
+			if (err != nil) != test.expectError {
+				t.Errorf("unexpected error status: got %v, want error: %v", err, test.expectError)
 			}
-
-			// Проверяем правильность результата
-			if result != tt.expected {
-				t.Errorf("Unpack(%q) = %q, expected %q", tt.input, result, tt.expected)
+			if result != test.expected {
+				t.Errorf("unexpected result: got %q, want %q", result, test.expected)
 			}
 		})
 	}

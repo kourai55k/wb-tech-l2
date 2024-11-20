@@ -1,1 +1,7 @@
-package dev03
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Dev 03")
+}
