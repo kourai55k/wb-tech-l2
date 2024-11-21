@@ -77,7 +77,7 @@ func main() {
 			}
 
 			// Печать контекста (строки до и после совпадения)
-			printContext(scanner, lineNumCounter, *before, *after, *context)
+			printContext(scanner, *before, *after, *context)
 		}
 	}
 
@@ -102,8 +102,7 @@ func matchLine(line, pattern string, fixed bool, ignoreCase bool) bool {
 }
 
 // Печать контекста строк до и после совпадения
-func printContext(scanner *bufio.Scanner, lineNumCounter, before, after, context int) {
-	// var contextLines []string
+func printContext(scanner *bufio.Scanner, before, after, context int) {
 
 	// Печать строк до совпадения
 	if before > 0 {
