@@ -302,13 +302,13 @@ func loadConfig() (Config, error) {
 // Основной запуск сервера
 func main() {
 	storage := NewStorage() // Инициализация хранилища событий
-
+	defaultPort := ":8080"
 	// Попытка загрузить конфигурацию
 	config, err := loadConfig()
 	if err != nil {
 		// Если ошибка при загрузке конфигурации, используем дефолтный порт
 		log.Printf("Error loading config: %v. Using default port :8080", err)
-		config.Port = ":8080"
+		config.Port = defaultPort
 	}
 
 	// Создаем маршруты
@@ -323,8 +323,12 @@ func main() {
 	// Добавляем логирование
 	loggedMux := loggingMiddleware(mux)
 
-	log.Printf("Server running on %s", config.Port)
+	log.Printf("Start server on %s", config.Port)
 	if err := http.ListenAndServe(config.Port, loggedMux); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
+		log.Printf("Server failed to start: %v", err)
+		log.Printf("Try to start server on default port: %v", defaultPort)
+		if err := http.ListenAndServe(defaultPort, loggedMux); err != nil {
+			log.Fatalf("Server failed to start on default port: %v", err)
+		}
 	}
 }
